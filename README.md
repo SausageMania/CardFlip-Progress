@@ -40,6 +40,12 @@ percent가 유동적으로 변하는 부분에서 버그가 발생했다.
 아래코드는 progress 퍼센트가 유동적으로 변하는 부분의 코드이다.
 
 ```javascript
+
+    const maxNumber = useMemo(() => [80, 40], []);
+
+    const [number, setNumber] = useState([0, 0]);
+    const [buttonClick, setButtonClick] = useState(false);
+    
     useEffect(() => {
         const increase = () => {
             return setTimeout(() => {
