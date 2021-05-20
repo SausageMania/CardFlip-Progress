@@ -42,19 +42,35 @@ percent가 유동적으로 변하는 부분에서 버그가 발생했다.
 ```javascript
     useEffect(() => {
         const increase = () => {
-            if (number < maxNumber) return setTimeout(() => setNumber(number + 1), 10);
+            return setTimeout(() => {
+                const copyNumber = number.slice();
+                copyNumber.forEach((num, index) => {
+                    if (num < maxNumber[index])
+                        copyNumber.splice(index, 1, num + maxNumber[index] / 100);
+                });
+                setNumber(copyNumber);
+            }, 10);
         };
         const decrease = () => {
-            if (number > 0) return setTimeout(() => setNumber(number - 1), 10);
+            return setTimeout(() => {
+                const copyNumber = number.slice();
+                copyNumber.forEach((num, index) => {
+                    if (num > 0) copyNumber.splice(index, 1, num - maxNumber[index] / 100);
+                });
+                setNumber(copyNumber);
+            }, 10);
         };
 
-        if (buttonClick) increase();
-        else decrease();
+        if (buttonClick && maxNumber[1] > number[1]) increase();
+        else if (!buttonClick && number[1] !== 0) decrease();
 
         return () => {
             if (buttonClick) clearTimeout(increase);
             else clearTimeout(decrease);
         };
-    }, [number, buttonClick]);
+    }, [number, maxNumber, buttonClick]);
 ```
 
+여러 개의 값을 입력받기 위해선 배열을 사용해야 했다.  
+이를 위해 코드를 배열에 맞게 수정하고 useEffect 에러를 고치기 위해 useMemo를 사용했다.  
+아직 useMemo에 대한 이해를 완벽히 하지 못해 더 알아보고 어떤 식으로 동작하는 지 이해할 필요가 있다.  
